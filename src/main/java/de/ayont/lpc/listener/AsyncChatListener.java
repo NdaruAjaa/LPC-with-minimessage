@@ -45,6 +45,14 @@ public class AsyncChatListener implements Listener {
         String effectiveRaw = moderation.action() == ModResult.Action.TRANSFORM ? moderation.text() : raw;
 
         boolean allowColor = player.hasPermission("lpc.chatcolor");
+        
+        // JALUR SAKRAL: Jika player punya izin warna, konversi otomatis ampersand (&a, &f, dsb) ke MiniMessage format
+        if (allowColor) {
+            effectiveRaw = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().serialize(
+                    net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(effectiveRaw)
+            );
+        }
+
         Component base = service.messageComponent(effectiveRaw, allowColor);
         base = plugin.getEmojiReplacer().apply(player, base);
         base = plugin.getUrlLinkifier().apply(player, base, true);
